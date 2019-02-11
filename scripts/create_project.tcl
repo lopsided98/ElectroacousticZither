@@ -23,9 +23,6 @@ add_files -fileset $source_fileset $src_root
 add_files -fileset $sim_fileset $test_root
 add_files -fileset $contraint_fileset $xdc_root
 
-# Use VHDL 2008
-set_property file_type {VHDL 2008} [get_files *.vhd]
-
 # Disable synthesis of testbenches
 set_property used_in_synthesis false [get_files -of [get_filesets $sim_fileset]]
 

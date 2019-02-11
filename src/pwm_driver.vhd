@@ -22,18 +22,17 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
-use IEEE.math_real.all;
 
 entity pwm_driver is
-    generic(bits: positive;
+    generic(bits: positive := 16;
             period: positive);
     port(clk: in std_logic;
-         duty_cycle: in std_logic_vector(bits downto 0);
-         output: out std_logic);
+         duty_cycle: in std_logic_vector(bits - 1 downto 0);
+         output: out std_logic := '0');
 end pwm_driver;
 
 architecture behavior of pwm_driver is
-    signal pos: std_logic_vector(bits downto 0) := (others => '0');
+    signal pos: std_logic_vector(bits - 1 downto 0) := (others => '0');
 
     component down_counter is
         generic(bits: positive := 4);
@@ -54,7 +53,11 @@ begin
 
     process(clk) begin
         if rising_edge(clk) then
-            output <= '0' when unsigned(pos) > unsigned(duty_cycle) else '1';
+            if unsigned(pos) >= unsigned(duty_cycle) then
+                output <= '0';
+            else 
+                output <= '1';
+            end if;
         end if;
     end process;
 
