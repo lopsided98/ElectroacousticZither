@@ -35,7 +35,20 @@ entity magnet_harp is
 end magnet_harp;
 
 architecture behavior of magnet_harp is
+    constant CLK_DIVIDER: natural := 4; -- 25 MHz main clock
 
+    signal clk: std_logic;
+
+    component clock_divider is
+        generic(divider: natural);
+        port(mclk: in std_logic;
+             dclk: out std_logic);
+    end component;
 begin
+
+    main_clock_divider: clock_divider
+        generic map(divider => CLK_DIVIDER)
+        port map(mclk => mclk,
+                 dclk => clk);
 
 end behavior;

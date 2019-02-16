@@ -23,7 +23,7 @@ use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
 entity down_counter is
-    generic(bits: positive := 4);
+    generic(bits: natural := 4);
     port (clk: in std_logic;
           k: in std_logic_vector(bits - 1 downto 0); -- preset value
           CE: in std_logic := '1'; -- count enable

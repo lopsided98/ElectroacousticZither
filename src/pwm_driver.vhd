@@ -24,8 +24,8 @@ use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
 entity pwm_driver is
-    generic(bits: positive := 16;
-            period: positive);
+    generic(bits: natural;
+            period: natural);
     port(clk: in std_logic;
          duty_cycle: in std_logic_vector(bits - 1 downto 0);
          output: out std_logic := '0');
