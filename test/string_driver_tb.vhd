@@ -34,6 +34,7 @@ architecture testbench of string_driver_tb is
     
     signal amplitude: natural := 0;
     signal period: positive := 10000;
+    signal invert: std_logic := '0';
     signal output: std_logic_vector(amplitude_bits - 1 downto 0); -- magnet amplitude
 
     component string_driver is
@@ -42,6 +43,7 @@ architecture testbench of string_driver_tb is
         port(clk: in std_logic;
              amplitude: in std_logic_vector(amplitude_bits - 1 downto 0);
              period: in std_logic_vector(period_bits - 1 downto 0);
+             invert: in std_logic;
              output: out std_logic_vector(amplitude_bits - 1 downto 0));
     end component;
 begin
@@ -52,6 +54,7 @@ begin
         port map(clk => clk,
                  amplitude => std_logic_vector(to_unsigned(amplitude, amplitude_bits)),
                  period => std_logic_vector(to_unsigned(period, period_bits)),
+                 invert => invert,
                  output => output);
 
     process begin
@@ -69,7 +72,10 @@ begin
         
         amplitude <= 700;
         period <= 100000;
-        wait for 10 * 100000 * CLK_PERIOD;
+        wait for 5 * 100000 * CLK_PERIOD;
+        invert <= '1';
+        wait for 5 * 100000 * CLK_PERIOD;
+        invert <= '0';
         
         amplitude <= 0;
         wait;

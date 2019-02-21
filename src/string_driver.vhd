@@ -30,6 +30,7 @@ entity string_driver is
     port(clk: in std_logic;
          amplitude: in std_logic_vector(amplitude_bits - 1 downto 0);
          period: in std_logic_vector(period_bits - 1 downto 0);
+         invert: in std_logic;
          output: out std_logic_vector(amplitude_bits - 1 downto 0));
 end string_driver;
 
@@ -71,6 +72,6 @@ begin
         end if;
     end process;
     
-    output <= amplitude when binary_output = '1' else (others => '0');
+    output <= amplitude when (binary_output = '1' and invert = '0') or (binary_output = '0' and invert = '1') else (others => '0');
 
 end behavior;

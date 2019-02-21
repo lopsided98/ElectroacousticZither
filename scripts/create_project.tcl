@@ -27,3 +27,6 @@ add_files -fileset $contraint_fileset $xdc_root
 set_property used_in_synthesis false [get_files -of [get_filesets $sim_fileset]]
 
 set_property top magnet_harp [get_filesets sources_1]
+
+# Generate .bin file for configuration memory
+set_property STEPS.WRITE_BITSTREAM.ARGS.BIN_FILE 1 [get_runs impl_1]

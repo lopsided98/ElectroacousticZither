@@ -32,6 +32,7 @@ architecture testbench of button_controller_tb is
     constant ATTACK_AMPLITUDE: positive := 1000;
     constant SUSTAIN_AMPLITUDE: positive := 417;
     constant ATTACK_TIME: positive := 500000; -- 20 ms
+    constant RELEASE_TIME: positive := 375000; -- 15 ms
     
     signal clk: std_logic := '0';
     

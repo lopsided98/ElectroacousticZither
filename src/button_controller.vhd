@@ -28,7 +28,9 @@ entity button_controller is
     generic(amplitude_bits: natural;
             attack_amplitude: positive;
             sustain_amplitude: positive;
-            attack_time: positive);
+            release_amplitude: positive;
+            attack_time: positive;
+            release_time: positive);
     port(clk: in std_logic;
          button: in std_logic;
          amplitude: out std_logic_vector(amplitude_bits - 1 downto 0);
@@ -37,6 +39,7 @@ end button_controller;
 
 architecture behavior of button_controller is
     constant ATTACK_TIME_BITS: natural := natural(ceil(log2(real(attack_time + 1))));
+    constant RELEASE_TIME_BITS: natural := natural(ceil(log2(real(release_time + 1))));
 
     component down_counter is
         generic(bits: natural := 4);
@@ -48,13 +51,16 @@ architecture behavior of button_controller is
               TC: out std_logic); -- terminal count
     end component;
 
-    type state_type is (st_idle, st_attack, st_sustain);
+    type state_type is (st_idle, st_attack, st_sustain, st_release);
     
     signal state: state_type := st_idle;
     signal next_state: state_type;
     
     signal attack_counter_preset: std_logic;
     signal attack_done: std_logic;
+    
+    signal release_counter_preset: std_logic;
+    signal release_done: std_logic;
 begin
 
     attack_counter: down_counter
@@ -63,6 +69,13 @@ begin
                  k => std_logic_vector(to_unsigned(attack_time, ATTACK_TIME_BITS)),
                  preset => attack_counter_preset,
                  TC => attack_done);
+    
+    release_counter: down_counter
+        generic map(bits => RELEASE_TIME_BITS)
+        port map(clk => clk,
+                 k => std_logic_vector(to_unsigned(release_time, RELEASE_TIME_BITS)),
+                 preset => release_counter_preset,
+                 TC => release_done);
     
     next_state_proc: process(state, button, attack_done) begin
         next_state <= state;
@@ -80,6 +93,12 @@ begin
                 end if;
             when st_sustain =>
                 if button = '0' then
+                    next_state <= st_release;
+                end if;
+            when st_release =>
+                if button = '1' then
+                    next_state <= st_sustain; 
+                elsif release_done = '1' then
                     next_state <= st_idle;
                 end if;
         end case;
@@ -89,6 +108,7 @@ begin
         amplitude <= (others => '0');
         invert <= '0';
         attack_counter_preset <= '1';
+        release_counter_preset <= '1';
 
         case state is
             when st_idle => null;
@@ -97,6 +117,10 @@ begin
                 attack_counter_preset <= '0';
             when st_sustain =>
                 amplitude <= std_logic_vector(to_unsigned(sustain_amplitude, amplitude_bits));
+            when st_release =>
+                amplitude <= std_logic_vector(to_unsigned(release_amplitude, amplitude_bits));
+                release_counter_preset <= '0';
+                invert <= '1';
         end case;
     end process;
     
