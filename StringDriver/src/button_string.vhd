@@ -47,8 +47,6 @@ architecture behavior of button_string is
 
     
     constant PERIOD_BITS: natural := natural(ceil(log2(real(period + 1))));
-    
-    constant PWM_PERIOD: natural := 1;
 
     signal button_debounce: std_logic;
     signal amplitude: std_logic_vector(AMPLITUDE_BITS - 1 downto 0);
