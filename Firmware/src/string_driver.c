@@ -1,6 +1,9 @@
 #include <xil_io.h>
 #include "string_driver.h"
 
+void string_driver_init(const struct string_driver *s) {
+}
+
 void string_driver_set_period(const struct string_driver *s, uint32_t period) {
 	Xil_Out32(s->base_addr + STRING_DRIVER_PERIOD_OFFSET, period);
 }

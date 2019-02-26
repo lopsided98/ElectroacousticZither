@@ -87,7 +87,6 @@ set_property -dict {
   CONFIG.C_USE_DCACHE {0}
   CONFIG.C_USE_MMU {0}
   CONFIG.C_USE_BRANCH_TARGET_CACHE {1}
-  CONFIG.C_CPU_CLK_FREQ_HZ {25000000}
   CONFIG.C_FREQ {25000000}
 } $cpu
 
@@ -105,16 +104,16 @@ apply_bd_automation -rule xilinx.com:bd_rule:microblaze -config {
 } $cpu
 
 set interrupt_concat [get_bd_cells cpu_xlconcat]
-# Rename interrupt concat
+# Rename interrupt concat (must be done separately)
 set_property name interrupt_concat $interrupt_concat
 
-# UART
-set uart [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_uartlite:2.0 uart]
-apply_board_connection -board_interface "usb_uart" -ip_intf "uart/UART" -diagram $diagram_name
-
 set_property -dict {
-  CONFIG.C_BAUDRATE {128000}
-} $uart
+  CONFIG.NUM_PORTS 3
+} $interrupt_concat
+
+# USB UART
+set uart [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_uart16550:2.0 uart]
+apply_board_connection -board_interface "usb_uart" -ip_intf ${uart}/UART -diagram $diagram_name
 
 apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config {
   Clk_master {/clock_manager/mclk}
@@ -125,7 +124,24 @@ apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config {
   master_apm {0}
 } [get_bd_intf_pins ${uart}/S_AXI]
 
-connect_bd_net [get_bd_pins ${uart}/interrupt] [get_bd_pins ${interrupt_concat}/In1]
+connect_bd_net [get_bd_pins ${uart}/ip2intc_irpt] [get_bd_pins ${interrupt_concat}/In1]
+
+# MIDI UART
+set midi_uart [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_uart16550:2.0 midi_uart]
+
+make_bd_pins_external -name midi_uart_rxd [get_bd_pins ${midi_uart}/sin]
+make_bd_pins_external -name midi_uart_txd [get_bd_pins ${midi_uart}/sout]
+
+apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config {
+  Clk_master {/clock_manager/mclk}
+  Clk_slave {Auto}
+  Clk_xbar {Auto}
+  Master {/cpu (Periph)}
+  Slave {${midi_uart}/S_AXI}
+  master_apm {0}
+} [get_bd_intf_pins ${midi_uart}/S_AXI]
+
+connect_bd_net [get_bd_pins ${midi_uart}/ip2intc_irpt] [get_bd_pins ${interrupt_concat}/In2]
 
 # LED/Switch GPIO
 set leds_switches [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 leds_switches]
@@ -184,8 +200,7 @@ for {set i 0} {$i < 8} {incr i} {
     master_apm {0}
   }  [get_bd_intf_pins ${string}/S_AXI]
   
-  make_bd_pins_external [get_bd_pins ${string}/output]
-  set_property name string_$i [get_bd_ports -of_objects [get_bd_nets ${string}_output]]
+  make_bd_pins_external -name string_$i [get_bd_pins ${string}/output]
 }
 
 # Reset controller

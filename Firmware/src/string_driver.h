@@ -12,6 +12,8 @@ struct string_driver {
 	size_t base_addr;
 };
 
+void string_driver_init(const struct string_driver *s);
+
 void string_driver_set_period(const struct string_driver *s, uint32_t period);
 
 void string_driver_set_amplitude(const struct string_driver *s, uint32_t amplitude);

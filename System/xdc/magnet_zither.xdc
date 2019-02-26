@@ -25,22 +25,22 @@ set_property -dict {PACKAGE_PIN T1 IOSTANDARD LVCMOS33} [get_ports {dip_switches
 set_property -dict {PACKAGE_PIN R2 IOSTANDARD LVCMOS33} [get_ports {dip_switches_16bits_tri_i[15]}]					
 
 # LEDs
-set_property -dict {PACKAGE_PIN U16 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[0]}]
-set_property -dict {PACKAGE_PIN E19 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[1]}]
-set_property -dict {PACKAGE_PIN U19 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[2]}]
-set_property -dict {PACKAGE_PIN V19 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[3]}]
-set_property -dict {PACKAGE_PIN W18 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[4]}]
-set_property -dict {PACKAGE_PIN U15 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[5]}]
-set_property -dict {PACKAGE_PIN U14 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[6]}]
-set_property -dict {PACKAGE_PIN V14 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[7]}]
-set_property -dict {PACKAGE_PIN V13 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[8]}]
-set_property -dict {PACKAGE_PIN V3 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[9]}]
-set_property -dict {PACKAGE_PIN W3 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[10]}]
-set_property -dict {PACKAGE_PIN U3 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[11]}]
-set_property -dict {PACKAGE_PIN P3 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[12]}]
-set_property -dict {PACKAGE_PIN N3 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[13]}]
-set_property -dict {PACKAGE_PIN P1 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[14]}]
-set_property -dict {PACKAGE_PIN L1 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_io[15]}]
+set_property -dict {PACKAGE_PIN U16 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[0]}]
+set_property -dict {PACKAGE_PIN E19 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[1]}]
+set_property -dict {PACKAGE_PIN U19 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[2]}]
+set_property -dict {PACKAGE_PIN V19 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[3]}]
+set_property -dict {PACKAGE_PIN W18 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[4]}]
+set_property -dict {PACKAGE_PIN U15 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[5]}]
+set_property -dict {PACKAGE_PIN U14 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[6]}]
+set_property -dict {PACKAGE_PIN V14 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[7]}]
+set_property -dict {PACKAGE_PIN V13 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[8]}]
+set_property -dict {PACKAGE_PIN V3 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[9]}]
+set_property -dict {PACKAGE_PIN W3 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[10]}]
+set_property -dict {PACKAGE_PIN U3 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[11]}]
+set_property -dict {PACKAGE_PIN P3 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[12]}]
+set_property -dict {PACKAGE_PIN N3 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[13]}]
+set_property -dict {PACKAGE_PIN P1 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[14]}]
+set_property -dict {PACKAGE_PIN L1 IOSTANDARD LVCMOS33} [get_ports {led_16bits_tri_o[15]}]
 
 # Buttons
 # Bank = 14, Pin name = , Sch name = BTNC
@@ -74,23 +74,23 @@ set_property -dict {PACKAGE_PIN G3 IOSTANDARD LVCMOS33} [get_ports {string_7}]
 
 # Pmod Header JB
 # Sch name = JB1
-set_property -dict {PACKAGE_PIN A14 IOSTANDARD LVCMOS33} [get_ports {btns[0]}]
+set_property -dict {PACKAGE_PIN A14 IOSTANDARD LVCMOS33} [get_ports midi_uart_rxd]
 # Sch name = JB2
-set_property -dict {PACKAGE_PIN A16 IOSTANDARD LVCMOS33} [get_ports {btns[1]}]
+set_property -dict {PACKAGE_PIN A16 IOSTANDARD LVCMOS33} [get_ports midi_uart_txd]
 # Sch name = JB3
-set_property -dict {PACKAGE_PIN B15 IOSTANDARD LVCMOS33} [get_ports {btns[2]}]
+#set_property -dict {PACKAGE_PIN B15 IOSTANDARD LVCMOS33} [get_ports {btns[2]}]
 # Sch name = JB4
-set_property -dict {PACKAGE_PIN B16 IOSTANDARD LVCMOS33} [get_ports {btns[3]}]
+#set_property -dict {PACKAGE_PIN B16 IOSTANDARD LVCMOS33} [get_ports {btns[3]}]
 
 # Pmod Header JC
 # Sch name = JC1
-set_property -dict {PACKAGE_PIN K17 IOSTANDARD LVCMOS33} [get_ports {btns[4]}]
+#set_property -dict {PACKAGE_PIN K17 IOSTANDARD LVCMOS33} [get_ports {btns[4]}]
 # Sch name = JC2
-set_property -dict {PACKAGE_PIN M18 IOSTANDARD LVCMOS33} [get_ports {btns[5]}]
+#set_property -dict {PACKAGE_PIN M18 IOSTANDARD LVCMOS33} [get_ports {btns[5]}]
 # Sch name = JC3
-set_property -dict {PACKAGE_PIN N17 IOSTANDARD LVCMOS33} [get_ports {btns[6]}]
+#set_property -dict {PACKAGE_PIN N17 IOSTANDARD LVCMOS33} [get_ports {btns[6]}]
 # Sch name = JC4
-set_property -dict {PACKAGE_PIN P18 IOSTANDARD LVCMOS33} [get_ports {btns[7]}]
+#set_property -dict {PACKAGE_PIN P18 IOSTANDARD LVCMOS33} [get_ports {btns[7]}]
 
 set_property -dict {PACKAGE_PIN B18 IOSTANDARD LVCMOS33} [get_ports usb_uart_rxd]
 set_property -dict {PACKAGE_PIN A18 IOSTANDARD LVCMOS33} [get_ports usb_uart_txd]
