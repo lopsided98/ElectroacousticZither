@@ -1,6 +1,8 @@
 #pragma once
 #include "string_driver.h"
 
+const struct note_controller_config NOTE_CONTROLLER_CONFIG_DEFAULT;
+
 enum note_controller_state {
 	IDLE,
 	ATTACK,
@@ -8,22 +10,31 @@ enum note_controller_state {
 	RELEASE
 };
 
-struct note_controller {
-	const struct string_driver *driver;
-	enum note_controller_state state;
+struct note_controller_config {
+	/**
+	 * Period for this configuration (in cycles)
+	 */
 	uint32_t period;
-
 	uint32_t attack_amplitude;
 	uint32_t sustain_amplitude;
 	uint32_t release_amplitude;
-
-	uint16_t attack_time;
-	uint16_t release_time;
-
-	uint32_t state_start_time;
+	uint32_t attack_time;
+	uint32_t release_time;
 };
 
-void note_controller_init(struct note_controller *cont, const struct string_driver* driver);
+struct note_controller {
+	const struct string_driver *driver;
+	enum note_controller_state state;
+
+	int32_t period_offset;
+
+	uint32_t state_start_time;
+
+	const struct note_controller_config *config;
+};
+
+void note_controller_init(struct note_controller *cont,
+		const struct string_driver* driver);
 
 void note_controller_update(struct note_controller *cont);
 
@@ -31,4 +42,11 @@ void note_controller_start(struct note_controller *cont);
 
 void note_controller_stop(struct note_controller *cont);
 
-void note_controller_set_period(struct note_controller *cont, uint32_t period);
+void note_controller_set_config(struct note_controller *cont,
+		const struct note_controller_config *config);
+
+void note_controller_set_period_offset(struct note_controller *cont,
+		int32_t period_offset);
+
+void note_controller_pitch_bend(struct note_controller *cont,
+		int16_t pitch_bend);

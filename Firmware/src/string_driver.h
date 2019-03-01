@@ -2,6 +2,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stddef.h>
+#include "util.h"
+
+// Convert a frequency in mHz to a period in clock cycles
+#define STRING_PERIOD(f) DIV_ROUND_CLOSEST(XPAR_CPU_CORE_CLOCK_FREQ_HZ * 100UL, (f))
+
+#define STRING_DRIVER_MAX_AMPLITUDE 1000
 
 #define STRING_DRIVER_PERIOD_OFFSET 0
 #define STRING_DRIVER_AMPLITUDE_OFFSET 4

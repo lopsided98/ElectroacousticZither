@@ -9,6 +9,8 @@
 #define MIDI_STATUS_COMMAND_MASK 0xF0
 #define MIDI_STATUS_CHANNEL_MASK 0x0F
 
+#define MIDI_PITCH_BEND_CENTER 8192
+
 enum midi_status_type {
 	MIDI_STATUS_TYPE_VOICE,
 	MIDI_STATUS_TYPE_SYSTEM_COMMON,
@@ -52,7 +54,12 @@ enum midi_note {
 	MIDI_NOTE_B2 = 47,
 	MIDI_NOTE_C3 = 48,
 	MIDI_NOTE_D3 = 50,
+	MIDI_NOTE_E3 = 52,
+	MIDI_NOTE_F3 = 53,
 	MIDI_NOTE_G3 = 55,
+	MIDI_NOTE_A3 = 57,
+	MIDI_NOTE_B3 = 59,
+	MIDI_NOTE_C4 = 60,
 	MIDI_NOTE_D4 = 62,
 	MIDI_NOTE_A4 = 69,
 	MIDI_NOTE_B4 = 71,
@@ -81,6 +88,8 @@ void midi_init(struct midi *m, XUartNs550 *uart);
 
 bool midi_recv(struct midi *m, struct midi_msg *msg);
 
-uint8_t midi_msg_command(struct midi_msg* msg);
+uint8_t midi_msg_command(const struct midi_msg* msg);
 
-uint8_t midi_msg_note(struct midi_msg* msg);
+uint8_t midi_msg_note(const struct midi_msg* msg);
+
+int16_t midi_msg_pitch_bend(const struct midi_msg* msg);
