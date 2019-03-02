@@ -135,19 +135,34 @@ bool midi_recv(struct midi *m, struct midi_msg* msg) {
 	return false;
 }
 
-uint8_t midi_msg_command(const struct midi_msg* msg) {
+enum midi_command midi_msg_command(const struct midi_msg *msg) {
 	return msg->status & MIDI_STATUS_COMMAND_MASK;
 }
 
-uint8_t midi_msg_note(const struct midi_msg* msg) {
+enum midi_note midi_msg_note(const struct midi_msg *msg) {
 	return msg->data[0];
 }
 
-uint8_t midi_msg_velocity(const struct midi_msg* msg) {
+uint8_t midi_msg_velocity(const struct midi_msg *msg) {
 	return msg->data[1];
 }
 
-int16_t midi_msg_pitch_bend(const struct midi_msg* msg) {
+int16_t midi_msg_pitch_bend(const struct midi_msg *msg) {
 	ASSERT(midi_msg_command(msg) == MIDI_COMMAND_PITCH_BEND);
-	return (((int16_t) msg->data[1]) << 7 | msg->data[1]) - MIDI_PITCH_BEND_CENTER;
+	return (((int16_t) msg->data[1]) << 7 | msg->data[0]) - MIDI_PITCH_BEND_CENTER;
+}
+
+enum midi_command_sysex midi_msg_command_sysex(const struct midi_msg *msg) {
+	ASSERT(msg->status == MIDI_COMMAND_SYSTEM_EXCLUSIVE);
+	return msg->data[1];
+}
+
+uint32_t midi_msg_sysex_freqency(const struct midi_msg* msg) {
+	ASSERT(midi_msg_command_sysex(msg) == MIDI_COMMAND_SYSEX_FREQENCY);
+
+	return ((uint32_t) msg->data[6]) << 28 |
+			((uint32_t) msg->data[5]) << 21 |
+			((uint32_t) msg->data[4]) << 14 |
+			((uint32_t) msg->data[3]) << 7 |
+			((uint32_t) msg->data[2]);
 }

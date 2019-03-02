@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <xuartns550.h>
 
-#define MIDI_MAX_DATA_BYTES 3
+#define MIDI_MAX_DATA_BYTES 8
 
 #define MIDI_TYPE_MASK 0x80
 #define MIDI_STATUS_COMMAND_MASK 0xF0
@@ -44,6 +44,10 @@ enum midi_command_system {
 	MIDI_COMMAND_SYSTEM_RESET = 0xFF,
 };
 
+enum midi_command_sysex {
+	MIDI_COMMAND_SYSEX_FREQENCY = 0x42
+};
+
 enum midi_note {
 	MIDI_NOTE_C2 = 36,
 	MIDI_NOTE_D2 = 38,
@@ -58,10 +62,17 @@ enum midi_note {
 	MIDI_NOTE_F3 = 53,
 	MIDI_NOTE_G3 = 55,
 	MIDI_NOTE_A3 = 57,
+	MIDI_NOTE_A3_SHARP = 58,
+	MIDI_NOTE_B3_FLAT = 58,
 	MIDI_NOTE_B3 = 59,
 	MIDI_NOTE_C4 = 60,
 	MIDI_NOTE_D4 = 62,
+	MIDI_NOTE_E4 = 64,
+	MIDI_NOTE_F4 = 65,
+	MIDI_NOTE_G4 = 67,
 	MIDI_NOTE_A4 = 69,
+	MIDI_NOTE_A4_SHARP = 70,
+	MIDI_NOTE_B4_FLAT = 70,
 	MIDI_NOTE_B4 = 71,
 	MIDI_NOTE_C5 = 72,
 	MIDI_NOTE_D5 = 74,
@@ -88,8 +99,12 @@ void midi_init(struct midi *m, XUartNs550 *uart);
 
 bool midi_recv(struct midi *m, struct midi_msg *msg);
 
-uint8_t midi_msg_command(const struct midi_msg* msg);
+enum midi_command midi_msg_command(const struct midi_msg *msg);
 
-uint8_t midi_msg_note(const struct midi_msg* msg);
+enum midi_note midi_msg_note(const struct midi_msg *msg);
 
-int16_t midi_msg_pitch_bend(const struct midi_msg* msg);
+int16_t midi_msg_pitch_bend(const struct midi_msg *msg);
+
+enum midi_command_sysex midi_msg_command_sysex(const struct midi_msg *msg);
+
+uint32_t midi_msg_sysex_freqency(const struct midi_msg* msg);

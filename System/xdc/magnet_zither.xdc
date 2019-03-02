@@ -84,9 +84,9 @@ set_property -dict {PACKAGE_PIN A16 IOSTANDARD LVCMOS33} [get_ports midi_uart_tx
 
 # Pmod Header JC
 # Sch name = JC1
-#set_property -dict {PACKAGE_PIN K17 IOSTANDARD LVCMOS33} [get_ports {btns[4]}]
+set_property -dict {PACKAGE_PIN K17 IOSTANDARD LVCMOS33} [get_ports debug_uart_rxd]
 # Sch name = JC2
-#set_property -dict {PACKAGE_PIN M18 IOSTANDARD LVCMOS33} [get_ports {btns[5]}]
+set_property -dict {PACKAGE_PIN M18 IOSTANDARD LVCMOS33} [get_ports debug_uart_txd]
 # Sch name = JC3
 #set_property -dict {PACKAGE_PIN N17 IOSTANDARD LVCMOS33} [get_ports {btns[6]}]
 # Sch name = JC4

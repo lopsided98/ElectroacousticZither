@@ -67,11 +67,11 @@ set_property -dict {
   CONFIG.G_USE_EXCEPTIONS {0}
   CONFIG.C_USE_MSR_INSTR {1}
   CONFIG.C_USE_PCMP_INSTR {1}
-  CONFIG.C_USE_REORDER_INSTR {0}
+  CONFIG.C_USE_REORDER_INSTR {1}
   CONFIG.C_USE_BARREL {1}
   CONFIG.C_USE_DIV {1}
-  CONFIG.C_USE_HW_MUL {1}
-  CONFIG.C_USE_FPU {0}
+  CONFIG.C_USE_HW_MUL {2}
+  CONFIG.C_USE_FPU {2}
   CONFIG.C_UNALIGNED_EXCEPTIONS {0}
   CONFIG.C_ILL_OPCODE_EXCEPTION {0}
   CONFIG.C_M_AXI_I_BUS_EXCEPTION {0}
@@ -108,7 +108,7 @@ set interrupt_concat [get_bd_cells cpu_xlconcat]
 set_property name interrupt_concat $interrupt_concat
 
 set_property -dict {
-  CONFIG.NUM_PORTS 3
+  CONFIG.NUM_PORTS 4
 } $interrupt_concat
 
 # USB UART
@@ -142,6 +142,23 @@ apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config {
 } [get_bd_intf_pins ${midi_uart}/S_AXI]
 
 connect_bd_net [get_bd_pins ${midi_uart}/ip2intc_irpt] [get_bd_pins ${interrupt_concat}/In2]
+
+# Debug UART
+set debug_uart [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_uart16550:2.0 debug_uart]
+
+make_bd_pins_external -name debug_uart_rxd [get_bd_pins ${debug_uart}/sin]
+make_bd_pins_external -name debug_uart_txd [get_bd_pins ${debug_uart}/sout]
+
+apply_bd_automation -rule xilinx.com:bd_rule:axi4 -config {
+  Clk_master {/clock_manager/mclk}
+  Clk_slave {Auto}
+  Clk_xbar {Auto}
+  Master {/cpu (Periph)}
+  Slave {${debug_uart}/S_AXI}
+  master_apm {0}
+} [get_bd_intf_pins ${debug_uart}/S_AXI]
+
+connect_bd_net [get_bd_pins ${debug_uart}/ip2intc_irpt] [get_bd_pins ${interrupt_concat}/In3]
 
 # LED/Switch GPIO
 set leds_switches [create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 leds_switches]
