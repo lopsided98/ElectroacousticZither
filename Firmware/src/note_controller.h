@@ -42,6 +42,8 @@ void note_controller_start(struct note_controller *cont);
 
 void note_controller_stop(struct note_controller *cont);
 
+bool note_controller_is_started(const struct note_controller *cont);
+
 void note_controller_set_config(struct note_controller *cont,
 		const struct note_controller_config *config);
 

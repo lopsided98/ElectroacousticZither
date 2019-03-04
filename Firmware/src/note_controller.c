@@ -66,8 +66,11 @@ void note_controller_stop(struct note_controller *cont) {
 	cont->state = RELEASE;
 }
 
-void note_controller_set_config(struct note_controller *cont,
-		const struct note_controller_config *config) {
+bool note_controller_is_started(const struct note_controller *cont) {
+	return cont->state != IDLE;
+}
+
+void note_controller_set_config(struct note_controller *cont, const struct note_controller_config *config) {
 	cont->config = config;
 	note_controller_update_period(cont);
 }

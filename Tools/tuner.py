@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-from enum import IntEnum
+import math
+from enum import IntEnum, unique
+from typing import Optional
 
 import aubio
 import numpy as np
@@ -10,6 +12,7 @@ SAMPLE_RATE = 44100
 HOP_SIZE = 4096
 
 
+@unique
 class MIDICommand(IntEnum):
     INVALID = 0x00,
     NOTE_OFF = 0x80,
@@ -22,6 +25,7 @@ class MIDICommand(IntEnum):
     SYSTEM = 0xF0
 
 
+@unique
 class MIDICommandSystem(IntEnum):
     EXCLUSIVE = 0xF0,
     TIME_CODE_QUARTER_FRAME = 0xF1,
@@ -55,8 +59,8 @@ class MIDINote(IntEnum):
     F3 = 53,
     G3 = 55,
     A3 = 57,
-    A3_SHARP = 58,
-    B3_FLAT = 58,
+    A_SHARP3 = 58,
+    B_FLAT3 = 58,
     B3 = 59,
     C4 = 60,
     D4 = 62,
@@ -64,8 +68,8 @@ class MIDINote(IntEnum):
     F4 = 65,
     G4 = 67,
     A4 = 69,
-    A4_SHARP = 70,
-    B4_FLAT = 70,
+    A_SHARP4 = 70,
+    B_FLAT4 = 70,
     B4 = 71,
     C5 = 72,
     D5 = 74,
@@ -77,13 +81,18 @@ class MIDINote(IntEnum):
 
 
 class MIDI:
-    def __init__(self, device_name: str = '/dev/ttyUSB3', baud: int = 115200):
+    def __init__(self, device_name: str = '/dev/ttyUSB2', baud: int = 115200):
         self._serial = serial.Serial(device_name, baud)
 
-    def send_note_on(self, note: MIDINote):
-        self._serial.write(bytes((MIDICommand.NOTE_ON, note, 64)))
+    def send_note_on(self, note: MIDINote, velocity: int = 64):
+        self._serial.write(bytes((MIDICommand.NOTE_ON, note, velocity)))
 
-    def send_frequency(self, note: MIDINote, frequency: int):
+    def send_note_off(self, note: MIDINote, velocity: int = 64):
+        self._serial.write(bytes((MIDICommand.NOTE_OFF, note, velocity)))
+
+    def send_frequency(self, note: MIDINote, frequency: float):
+        frequency = round(frequency * 100)
+
         self._serial.write(bytes((
             MIDICommand.SYSTEM | MIDICommandSystem.EXCLUSIVE,
             note,
@@ -96,6 +105,31 @@ class MIDI:
         )))
 
 
+A4 = 440
+C0 = A4 * pow(2, -4.75)
+
+NOTE_NAMES = ('C', 'C_SHARP', 'D', 'D_SHARP', 'E', 'F', 'F_SHARP', 'G', 'G_SHARP', 'A', 'B_FLAT', "B")
+
+
+def find_closest_note(freq: float) -> (str, Optional[MIDINote], float):
+    h = round(12 * math.log2(freq / C0))
+    octave = h // 12
+    n = h % 12
+
+    nominal_freq = C0 * (2 ** (h / 12))
+
+    note_name = NOTE_NAMES[n] + str(octave)
+    try:
+        midi_note = MIDINote[note_name]
+    except KeyError:
+        midi_note = None
+
+    return note_name, midi_note, nominal_freq
+
+
+SCALE = {MIDINote.F3, MIDINote.G3, MIDINote.A3, MIDINote.B_FLAT3, MIDINote.C4, MIDINote.D4, MIDINote.E4, MIDINote.F4}
+
+
 def main():
     p = pyaudio.PyAudio()
 
@@ -105,11 +139,13 @@ def main():
                     frames_per_buffer=HOP_SIZE,
                     input=True)
 
-    pitch_detect = aubio.pitch("fcomb", HOP_SIZE * 8, HOP_SIZE, SAMPLE_RATE)
+    pitch_detect = aubio.pitch("mcomb", HOP_SIZE * 8, HOP_SIZE, SAMPLE_RATE)
     pitch_detect.set_unit("Hz")
-    pitch_detect.set_silence(-32)
+    pitch_detect.set_silence(-40)
 
     midi = MIDI()
+
+    prev_note = MIDINote.B5  # Unused note
 
     while True:
         data = stream.read(HOP_SIZE)
@@ -117,10 +153,24 @@ def main():
 
         freq = float(pitch_detect(samples)[0])
 
-        if freq != 0:
-            midi.send_frequency(MIDINote.F3, round(freq * 100))
+        if freq == 0:
+            continue
+        note_name, midi_note, nominal_freq = find_closest_note(freq)
 
-        print("{} Hz".format(freq))
+        print("{:<9} {:>7.2f} Hz (delta: {:>6.2f}) {}"
+              .format(note_name, freq, freq - nominal_freq, "***" if midi_note is not None else ""))
+
+        if midi_note is None:
+            continue
+
+        if midi_note not in SCALE:
+            continue
+
+        if midi_note != prev_note:
+            midi.send_note_off(prev_note)
+            midi.send_note_on(midi_note)
+            prev_note = midi_note
+        midi.send_frequency(midi_note, freq)
 
 
 if __name__ == "__main__":

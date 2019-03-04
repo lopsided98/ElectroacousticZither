@@ -1,0 +1,12 @@
+[package]
+name = "serial_midi"
+version = "0.1.0"
+description = "Tool to connect the ALSA MIDI sequencer to any serial port"
+authors = ["Ben Wolsieffer <benwolsieffer@gmail.com>"]
+edition = '2018'
+
+[dependencies]
+alsa = "0"
+serialport = "3"
+failure = "0"
+clap = "2"

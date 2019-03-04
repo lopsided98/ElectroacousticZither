@@ -147,6 +147,11 @@ uint8_t midi_msg_velocity(const struct midi_msg *msg) {
 	return msg->data[1];
 }
 
+uint8_t midi_msg_control(const struct midi_msg *msg) {
+	ASSERT(midi_msg_command(msg) == MIDI_COMMAND_CONTROL_CHANGE);
+	return msg->data[0];
+}
+
 int16_t midi_msg_pitch_bend(const struct midi_msg *msg) {
 	ASSERT(midi_msg_command(msg) == MIDI_COMMAND_PITCH_BEND);
 	return (((int16_t) msg->data[1]) << 7 | msg->data[0]) - MIDI_PITCH_BEND_CENTER;

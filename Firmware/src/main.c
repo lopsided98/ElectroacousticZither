@@ -223,6 +223,10 @@ static struct note_config NOTE_CONFIG_F5 = {
 
 #define GPIO_LEDS_CHANNEL 1
 #define GPIO_SWITCHES_CHANNEL 2
+
+#define GPIO_SWITCHES_REMAP_MASK 0x8000
+#define GPIO_SWITCHES_STRING_MASK 0x00FF
+
 static XGpio leds_switches;
 
 static XUartNs550Format usb_uart_data_format = {
@@ -233,9 +237,12 @@ static XUartNs550Format usb_uart_data_format = {
 };
 static XUartNs550 usb_uart;
 
-static XUartNs550Format midi_uart_data_format = { .BaudRate = 31250, .DataBits =
-XUN_FORMAT_8_BITS, .StopBits = XUN_FORMAT_1_STOP_BIT, .Parity =
-XUN_FORMAT_NO_PARITY };
+static XUartNs550Format midi_uart_data_format = {
+	.BaudRate = 31250,
+	.DataBits = XUN_FORMAT_8_BITS,
+	.StopBits = XUN_FORMAT_1_STOP_BIT,
+	.Parity = XUN_FORMAT_NO_PARITY
+};
 static XUartNs550 midi_uart;
 
 static XUartNs550Format debug_uart_data_format = {
@@ -334,7 +341,7 @@ enum midi_note midi_note_keyboard_remap(enum midi_note note) {
 	case MIDI_NOTE_C4:
 		return MIDI_NOTE_F5;
 	default:
-		return 0;
+		return MIDI_NOTE_INVALID;
 	}
 }
 
@@ -398,21 +405,84 @@ struct note_config *midi_note_config(uint8_t note) {
 	}
 }
 
-void handle_midi_msg(const struct midi_msg *msg) {
+void handle_midi_note_on(const struct midi_msg *msg, bool remap) {
+	enum midi_note note = midi_msg_note(msg);
+	uint8_t velocity = midi_msg_velocity(msg);
+	if (remap) {
+		note = midi_note_keyboard_remap(note);
+	}
+	struct note_config *config = midi_note_config(note);
+	printf("note on: %u, velocity: %u", note, velocity);
+	if (config) {
+		putchar('\n');
+		note_controller_set_config(config->controller, &config->controller_config);
+		if (velocity != 0) {
+			note_controller_start(config->controller);
+		} else {
+			note_controller_stop(config->controller);
+		}
+	} else {
+		puts(" (out of range)");
+	}
+}
+
+void handle_midi_note_off(const struct midi_msg *msg, bool remap) {
+	enum midi_note note = midi_msg_note(msg);
+	if (remap) {
+		note = midi_note_keyboard_remap(note);
+	}
+	struct note_config *config = midi_note_config(note);
+	if (config) {
+		note_controller_stop(config->controller);
+	}
+}
+
+void handle_midi_control_change(const struct midi_msg *msg) {
+	switch (midi_msg_control(msg)) {
+	case MIDI_CONTROL_ALL_SOUND_OFF:
+	case MIDI_CONTROL_ALL_NOTES_OFF:
+		for (uint8_t i = 0; i < ARRAY_LENGTH(controllers); ++i) {
+			note_controller_stop(&controllers[i]);
+		}
+		break;
+	}
+}
+
+void handle_midi_sysex_frequency(const struct midi_msg *msg) {
+	enum midi_note note = midi_msg_note(msg);
+	struct note_config *config = midi_note_config(note);
+
+	uint32_t frequency = midi_msg_sysex_freqency(msg);
+	printf("note: %u, frequency: %lu\n", midi_msg_note(msg), frequency);
+
+	if (frequency && config) {
+		config->controller_config.period = STRING_PERIOD(frequency);
+		note_controller_set_config(config->controller, &config->controller_config);
+
+		struct note_config *harmonic_config = midi_note_config_harmonic(note);
+		if (harmonic_config) {
+			config->controller_config.period = DIV_ROUND_CLOSEST(config->controller_config.period, 2);
+			note_controller_set_config(harmonic_config->controller, &harmonic_config->controller_config);
+		}
+	}
+}
+
+void handle_midi_msg(const struct midi_msg *msg, bool remap) {
 	uint8_t command = midi_msg_command(msg);
 
-	struct note_config *config = NULL;
-
 	switch (command) {
-	case MIDI_COMMAND_NOTE_ON:
-		printf("note: %u\n", midi_msg_note(msg));
 	case MIDI_COMMAND_NOTE_OFF:
-		config = midi_note_config(midi_note_keyboard_remap(midi_msg_note(msg)));
+		handle_midi_note_off(msg, remap);
+		break;
+	case MIDI_COMMAND_NOTE_ON:
+		handle_midi_note_on(msg, remap);
+		break;
+	case MIDI_COMMAND_CONTROL_CHANGE:
+		handle_midi_control_change(msg);
 		break;
 	case MIDI_COMMAND_PITCH_BEND:
 		for (uint8_t i = 0; i < ARRAY_LENGTH(controllers); ++i) {
-			note_controller_pitch_bend(&controllers[i],
-					midi_msg_pitch_bend(msg));
+			note_controller_pitch_bend(&controllers[i], midi_msg_pitch_bend(msg));
 		}
 		break;
 	case MIDI_COMMAND_SYSTEM:
@@ -420,8 +490,8 @@ void handle_midi_msg(const struct midi_msg *msg) {
 		case MIDI_COMMAND_SYSTEM_EXCLUSIVE:
 			switch (midi_msg_command_sysex(msg)) {
 			case MIDI_COMMAND_SYSEX_FREQENCY:
-					config = midi_note_config(midi_msg_note(msg));
-					break;
+				handle_midi_sysex_frequency(msg);
+				break;
 			}
 			break;
 		}
@@ -429,35 +499,6 @@ void handle_midi_msg(const struct midi_msg *msg) {
 	default:
 		printf("command: %u: %u = %u\n", command, msg->data[0], msg->data[1]);
 		break;
-	}
-
-	if (config) {
-		note_controller_set_config(config->controller, &config->controller_config);
-
-		switch (command) {
-		case MIDI_COMMAND_NOTE_ON:
-			note_controller_start(config->controller);
-			break;
-		case MIDI_COMMAND_NOTE_OFF:
-			note_controller_stop(config->controller);
-			break;
-		case MIDI_COMMAND_SYSTEM:
-			switch (msg->status) {
-			case MIDI_COMMAND_SYSTEM_EXCLUSIVE:
-				switch (midi_msg_command_sysex(msg)) {
-				case MIDI_COMMAND_SYSEX_FREQENCY:{
-					uint32_t frequency = midi_msg_sysex_freqency(msg);
-					printf("note: %u, frequency: %lu\n", midi_msg_note(msg), frequency);
-					if (frequency) {
-						config->controller_config.period = STRING_PERIOD(frequency);
-					}
-					break;
-				}
-				}
-				break;
-			}
-			break;
-		}
 	}
 }
 
@@ -477,30 +518,43 @@ int main() {
 	uint32_t old_switches = 0;
 
 	while (true) {
-		if (midi_recv(&midi, &midi_msg)) {
-			handle_midi_msg(&midi_msg);
-		}
+		uint32_t leds = 0;
 
-		if (midi_recv(&usb_midi, &usb_midi_msg)) {
-			handle_midi_msg(&usb_midi_msg);
-		}
-
-		uint32_t switches = XGpio_DiscreteRead(&leds_switches,
-		GPIO_SWITCHES_CHANNEL);
+		uint32_t switches = XGpio_DiscreteRead(&leds_switches, GPIO_SWITCHES_CHANNEL);
 		uint32_t changed_switches = switches ^ old_switches;
 		old_switches = switches;
 
-		XGpio_DiscreteWrite(&leds_switches, GPIO_LEDS_CHANNEL, switches);
+		// Whether to enable keyboard remap
+		leds |= switches & GPIO_SWITCHES_REMAP_MASK;
+		bool remap = (switches & GPIO_SWITCHES_REMAP_MASK) != 0;
+
+		if (midi_recv(&midi, &midi_msg)) {
+			handle_midi_msg(&midi_msg, remap);
+		}
+
+		if (midi_recv(&usb_midi, &usb_midi_msg)) {
+			// USB MIDI never uses keyboard remap
+			handle_midi_msg(&usb_midi_msg, false);
+		}
 
 		for (uint8_t i = 0; i < ARRAY_LENGTH(controllers); ++i) {
+			struct note_controller *controller = &controllers[i];
+
 			if (changed_switches & switches & (1 << i)) {
-				note_controller_start(&controllers[i]);
+				note_controller_start(controller);
 			}
 			if (changed_switches & ~switches & (1 << i)) {
-				note_controller_stop(&controllers[i]);
+				note_controller_stop(controller);
 			}
-			note_controller_update(&controllers[i]);
+			note_controller_update(controller);
+
+			if (note_controller_is_started(controller)) {
+				leds |= 1 << i;
+			}
 		}
+
+		XGpio_DiscreteWrite(&leds_switches, GPIO_LEDS_CHANNEL, leds);
+
 		usleep(20);
 	}
 

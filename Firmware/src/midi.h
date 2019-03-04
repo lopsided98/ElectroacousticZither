@@ -80,7 +80,13 @@ enum midi_note {
 	MIDI_NOTE_F5 = 77,
 	MIDI_NOTE_G5 = 79,
 	MIDI_NOTE_A5 = 81,
-	MIDI_NOTE_B5 = 83
+	MIDI_NOTE_B5 = 83,
+	MIDI_NOTE_INVALID = 255
+};
+
+enum midi_control {
+	MIDI_CONTROL_ALL_SOUND_OFF = 120,
+	MIDI_CONTROL_ALL_NOTES_OFF = 123
 };
 
 struct midi {
@@ -102,6 +108,10 @@ bool midi_recv(struct midi *m, struct midi_msg *msg);
 enum midi_command midi_msg_command(const struct midi_msg *msg);
 
 enum midi_note midi_msg_note(const struct midi_msg *msg);
+
+uint8_t midi_msg_velocity(const struct midi_msg *msg);
+
+uint8_t midi_msg_control(const struct midi_msg *msg);
 
 int16_t midi_msg_pitch_bend(const struct midi_msg *msg);
 
