@@ -36,7 +36,7 @@ static struct note_config NOTE_CONFIG_F3 = {
 		.attack_amplitude = 1000,
 		.sustain_amplitude = 417,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
+		.attack_time = 70000,
 		.release_time = 15000
 	}
 };
@@ -461,8 +461,7 @@ void handle_midi_sysex_frequency(const struct midi_msg *msg) {
 
 		struct note_config *harmonic_config = midi_note_config_harmonic(note);
 		if (harmonic_config) {
-			config->controller_config.period = DIV_ROUND_CLOSEST(config->controller_config.period, 2);
-			note_controller_set_config(harmonic_config->controller, &harmonic_config->controller_config);
+			harmonic_config->controller_config.period = DIV_ROUND_CLOSEST(config->controller_config.period, 2);
 		}
 	}
 }
@@ -481,9 +480,9 @@ void handle_midi_msg(const struct midi_msg *msg, bool remap) {
 		handle_midi_control_change(msg);
 		break;
 	case MIDI_COMMAND_PITCH_BEND:
-		for (uint8_t i = 0; i < ARRAY_LENGTH(controllers); ++i) {
-			note_controller_pitch_bend(&controllers[i], midi_msg_pitch_bend(msg));
-		}
+//		for (uint8_t i = 0; i < ARRAY_LENGTH(controllers); ++i) {
+//			note_controller_pitch_bend(&controllers[i], midi_msg_pitch_bend(msg));
+//		}
 		break;
 	case MIDI_COMMAND_SYSTEM:
 		switch (msg->status) {

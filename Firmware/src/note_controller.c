@@ -20,6 +20,7 @@ void note_controller_init(struct note_controller *cont,
 	cont->driver = driver;
 	cont->state = IDLE;
 	cont->period_offset = 0;
+	cont->state_start_time = 0;
 	note_controller_set_config(cont, &NOTE_CONTROLLER_CONFIG_DEFAULT);
 }
 
