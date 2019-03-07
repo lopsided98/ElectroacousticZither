@@ -1,4 +1,5 @@
 #include <xil_io.h>
+#include <stdio.h>
 #include "string_driver.h"
 
 void string_driver_init(const struct string_driver *s) {

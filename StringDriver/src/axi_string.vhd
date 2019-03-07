@@ -69,7 +69,8 @@ architecture behavior of axi_string is
     constant AMPLITUDE_BITS: natural := natural(ceil(log2(real(max_amplitude + 1))));
     constant FLAGS_BITS: natural := 1;
     
-    constant DEFAULT_PERIOD: std_logic_vector(PERIOD_BITS - 1 downto 0) := (others => '1');
+    -- Reasonable default period. Too large and the hardware will seemingly hang until half the period has passed.
+    constant DEFAULT_PERIOD: std_logic_vector(PERIOD_BITS - 1 downto 0) := std_logic_vector(to_unsigned(C_S_AXI_ACLK_FREQ_HZ / 440, PERIOD_BITS));
     constant DEFAULT_AMPLITUDE: std_logic_vector(AMPLITUDE_BITS - 1 downto 0) := (others => '0');
     constant DEFAULT_FLAGS: std_logic_vector(FLAGS_BITS - 1 downto 0) := (others => '0');
     

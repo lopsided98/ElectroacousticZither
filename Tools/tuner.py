@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import argparse
 import math
 from enum import IntEnum, unique
 from typing import Optional
@@ -81,7 +82,7 @@ class MIDINote(IntEnum):
 
 
 class MIDI:
-    def __init__(self, device_name: str = '/dev/ttyUSB2', baud: int = 115200):
+    def __init__(self, device_name: str = '/dev/ttyUSB0', baud: int = 115200):
         self._serial = serial.Serial(device_name, baud)
 
     def send_note_on(self, note: MIDINote, velocity: int = 64):
@@ -100,6 +101,7 @@ class MIDI:
             frequency & 0x7F,
             (frequency >> 7) & 0x7F,
             (frequency >> 14) & 0x7F,
+            (frequency >> 21) & 0x7F,
             (frequency >> 28) & 0xF,
             MIDICommand.SYSTEM | MIDICommandSystem.END_OF_EXCLUSIVE
         )))
@@ -131,6 +133,11 @@ SCALE = {MIDINote.F3, MIDINote.G3, MIDINote.A3, MIDINote.B_FLAT3, MIDINote.C4, M
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Electroacoustic zither tuner")
+    parser.add_argument('device', default='/dev/ttyUSB0', nargs='?', help="serial port device")
+    parser.add_argument('-b', '--baud', type=int, default=115200, help="serial port baud rate")
+    args = parser.parse_args()
+
     p = pyaudio.PyAudio()
 
     stream = p.open(format=pyaudio.paFloat32,
@@ -143,9 +150,11 @@ def main():
     pitch_detect.set_unit("Hz")
     pitch_detect.set_silence(-40)
 
-    midi = MIDI()
+    midi = MIDI(device_name=args.device, baud=args.baud)
 
-    prev_note = MIDINote.B5  # Unused note
+    prev_note = None
+
+    avg_freq = 0
 
     while True:
         data = stream.read(HOP_SIZE)
@@ -157,20 +166,23 @@ def main():
             continue
         note_name, midi_note, nominal_freq = find_closest_note(freq)
 
-        print("{:<9} {:>7.2f} Hz (delta: {:>6.2f}) {}"
-              .format(note_name, freq, freq - nominal_freq, "***" if midi_note is not None else ""))
-
-        if midi_note is None:
-            continue
-
         if midi_note not in SCALE:
             continue
 
         if midi_note != prev_note:
-            midi.send_note_off(prev_note)
+            if prev_note is not None:
+                midi.send_note_off(prev_note)
             midi.send_note_on(midi_note)
             prev_note = midi_note
-        midi.send_frequency(midi_note, freq)
+            avg_freq = freq
+
+        # Rolling average
+        avg_freq = avg_freq * 0.9 + freq * 0.1
+
+        print("{:<9} {:>7.2f} Hz, avg: {:>7.2f} Hz, delta: {:>6.2f}"
+              .format(note_name, freq, avg_freq, avg_freq - nominal_freq))
+
+        midi.send_frequency(midi_note, avg_freq)
 
 
 if __name__ == "__main__":

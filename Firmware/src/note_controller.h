@@ -26,9 +26,10 @@ struct note_controller {
 	const struct string_driver *driver;
 	enum note_controller_state state;
 
-	int32_t period_offset;
-
 	uint32_t state_start_time;
+	int32_t period_offset;
+	// Attack time is modulated by velocity
+	uint32_t attack_time;
 
 	const struct note_controller_config *config;
 };
@@ -38,7 +39,7 @@ void note_controller_init(struct note_controller *cont,
 
 void note_controller_update(struct note_controller *cont);
 
-void note_controller_start(struct note_controller *cont);
+void note_controller_start(struct note_controller *cont, uint8_t velocity);
 
 void note_controller_stop(struct note_controller *cont);
 

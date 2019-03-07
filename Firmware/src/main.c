@@ -34,10 +34,10 @@ static struct note_config NOTE_CONFIG_F3 = {
 	.controller_config = {
 		.period = STRING_PERIOD(17461),
 		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
+		.sustain_amplitude = 390,
 		.release_amplitude = 1000,
-		.attack_time = 70000,
-		.release_time = 15000
+		.attack_time = 90000,
+		.release_time = 0
 	}
 };
 
@@ -46,10 +46,10 @@ static struct note_config NOTE_CONFIG_G3 = {
 	.controller_config = {
 		.period = STRING_PERIOD(19600),
 		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
+		.sustain_amplitude = 390,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
-		.release_time = 15000
+		.attack_time = 80000,
+		.release_time = 0
 	}
 };
 
@@ -58,10 +58,10 @@ static struct note_config NOTE_CONFIG_A3 = {
 	.controller_config = {
 		.period = STRING_PERIOD(22000),
 		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
+		.sustain_amplitude = 390,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
-		.release_time = 15000
+		.attack_time = 50000,
+		.release_time = 0
 	}
 };
 
@@ -70,10 +70,10 @@ static struct note_config NOTE_CONFIG_B3_FLAT = {
 	.controller_config = {
 		.period = STRING_PERIOD(23308),
 		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
+		.sustain_amplitude = 390,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
-		.release_time = 15000
+		.attack_time = 50000,
+		.release_time = 0
 	}
 };
 
@@ -82,10 +82,10 @@ static struct note_config NOTE_CONFIG_C4 = {
 	.controller_config = {
 		.period = STRING_PERIOD(26163),
 		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
+		.sustain_amplitude = 390,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
-		.release_time = 15000
+		.attack_time = 50000,
+		.release_time = 0
 	}
 };
 
@@ -94,10 +94,10 @@ static struct note_config NOTE_CONFIG_D4 = {
 	.controller_config = {
 		.period = STRING_PERIOD(29366),
 		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
+		.sustain_amplitude = 390,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
-		.release_time = 1500
+		.attack_time = 50000,
+		.release_time = 0
 	}
 };
 
@@ -106,10 +106,10 @@ static struct note_config NOTE_CONFIG_E4 = {
 	.controller_config = {
 		.period = STRING_PERIOD(32963),
 		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
+		.sustain_amplitude = 390,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
-		.release_time = 1500
+		.attack_time = 50000,
+		.release_time = 0
 	}
 };
 
@@ -118,10 +118,10 @@ static struct note_config NOTE_CONFIG_F4 = {
 	.controller_config = {
 		.period = STRING_PERIOD(34923),
 		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
+		.sustain_amplitude = 390,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
-		.release_time = 1500
+		.attack_time = 50000,
+		.release_time = 0
 	}
 };
 
@@ -132,8 +132,8 @@ static struct note_config NOTE_CONFIG_F4_2 = {
 		.attack_amplitude = 1000,
 		.sustain_amplitude = 417,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
-		.release_time = 15000
+		.attack_time = 50000,
+		.release_time = 0
 	}
 };
 
@@ -144,8 +144,8 @@ static struct note_config NOTE_CONFIG_G4 = {
 		.attack_amplitude = 1000,
 		.sustain_amplitude = 417,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
-		.release_time = 15000
+		.attack_time = 50000,
+		.release_time = 0
 	}
 };
 
@@ -156,8 +156,8 @@ static struct note_config NOTE_CONFIG_A4 = {
 		.attack_amplitude = 1000,
 		.sustain_amplitude = 417,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
-		.release_time = 15000,
+		.attack_time = 50000,
+		.release_time = 0,
 	}
 };
 
@@ -168,8 +168,8 @@ static struct note_config NOTE_CONFIG_B4_FLAT = {
 		.attack_amplitude = 1000,
 		.sustain_amplitude = 417,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
-		.release_time = 15000,
+		.attack_time = 50000,
+		.release_time = 0,
 	}
 };
 
@@ -180,8 +180,8 @@ static struct note_config NOTE_CONFIG_C5 = {
 		.attack_amplitude = 1000,
 		.sustain_amplitude = 417,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
-		.release_time = 15000
+		.attack_time = 50000,
+		.release_time = 0
 	}
 };
 
@@ -192,8 +192,8 @@ static struct note_config NOTE_CONFIG_D5 = {
 		.attack_amplitude = 1000,
 		.sustain_amplitude = 417,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
-		.release_time = 15000
+		.attack_time = 50000,
+		.release_time = 0
 	}
 };
 
@@ -204,8 +204,8 @@ static struct note_config NOTE_CONFIG_E5 = {
 		.attack_amplitude = 1000,
 		.sustain_amplitude = 417,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
-		.release_time = 15000
+		.attack_time = 50000,
+		.release_time = 0
 	}
 };
 
@@ -216,8 +216,8 @@ static struct note_config NOTE_CONFIG_F5 = {
 		.attack_amplitude = 1000,
 		.sustain_amplitude = 417,
 		.release_amplitude = 1000,
-		.attack_time = 30000,
-		.release_time = 15000
+		.attack_time = 50000,
+		.release_time = 0
 	}
 };
 
@@ -417,7 +417,7 @@ void handle_midi_note_on(const struct midi_msg *msg, bool remap) {
 		putchar('\n');
 		note_controller_set_config(config->controller, &config->controller_config);
 		if (velocity != 0) {
-			note_controller_start(config->controller);
+			note_controller_start(config->controller, velocity);
 		} else {
 			note_controller_stop(config->controller);
 		}
@@ -540,7 +540,7 @@ int main() {
 			struct note_controller *controller = &controllers[i];
 
 			if (changed_switches & switches & (1 << i)) {
-				note_controller_start(controller);
+				note_controller_start(controller, 64);
 			}
 			if (changed_switches & ~switches & (1 << i)) {
 				note_controller_stop(controller);

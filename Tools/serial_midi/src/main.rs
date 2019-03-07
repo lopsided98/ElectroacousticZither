@@ -13,7 +13,7 @@ use failure::Error;
 const BUFFER_SIZE: u32 = 512;
 
 fn main() -> Result<(), Error> {
-    let arg_matches = clap::App::new(crate_name!())
+    let args = clap::App::new(crate_name!())
         .version(crate_version!())
         .author(crate_authors!())
         .about(crate_description!())
@@ -22,7 +22,7 @@ fn main() -> Result<(), Error> {
             .long("baud")
             .takes_value(true)
             .default_value("31250")
-            .help("Serial port baud rate"))
+            .help("serial port baud rate"))
         .arg(Arg::with_name("name")
             .short("n")
             .long("name")
@@ -31,12 +31,12 @@ fn main() -> Result<(), Error> {
             .help("MIDI port name"))
         .arg(Arg::with_name("device")
             .required(true)
-            .help("Serial port device"))
+            .help("serial port device"))
         .get_matches();
 
-    let baud_rate = value_t!(arg_matches, "baud", u32).unwrap_or_else(|e| e.exit());
-    let name = arg_matches.value_of("name").unwrap();
-    let device = arg_matches.value_of("device").unwrap();
+    let baud_rate = value_t!(args, "baud", u32).unwrap_or_else(|e| e.exit());
+    let name = args.value_of("name").unwrap();
+    let device = args.value_of("device").unwrap();
 
     let seq = seq::Seq::open(None, Some(alsa::Direction::Capture), false)?;
     seq.set_client_name(&CString::new("serial_midi")?)?;
@@ -58,12 +58,9 @@ fn main() -> Result<(), Error> {
     let mut serial = None;
 
     loop {
-        match seq_in.event_input_pending(true).and_then(|r| match r {
-            0 => Ok(None),
-            _ => seq_in.event_input().map(|ev| Some(ev)),
-        }) {
+        match seq_in.event_input() {
             Err(e) => eprintln!("Warning: failed to get events: {}", e),
-            Ok(Some(mut event)) => {
+            Ok(mut event) => {
                 let mut out_buf = [0u8; BUFFER_SIZE as usize];
 
                 match event.get_type() {
@@ -101,7 +98,6 @@ fn main() -> Result<(), Error> {
                     }
                 }
             }
-            Ok(None) => () // No event
         }
     }
 }

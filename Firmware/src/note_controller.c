@@ -21,6 +21,7 @@ void note_controller_init(struct note_controller *cont,
 	cont->state = IDLE;
 	cont->period_offset = 0;
 	cont->state_start_time = 0;
+	cont->attack_time = 0;
 	note_controller_set_config(cont, &NOTE_CONTROLLER_CONFIG_DEFAULT);
 }
 
@@ -35,7 +36,7 @@ void note_controller_update(struct note_controller *cont) {
 		break;
 	case ATTACK:
 		amplitude = cont->config->attack_amplitude;
-		if (state_time >= cont->config->attack_time) {
+		if (state_time >= cont->attack_time) {
 			cont->state = SUSTAIN;
 		}
 		break;
@@ -55,8 +56,9 @@ void note_controller_update(struct note_controller *cont) {
 	string_driver_set_inverted(cont->driver, inverted);
 }
 
-void note_controller_start(struct note_controller *cont) {
+void note_controller_start(struct note_controller *cont, uint8_t velocity) {
 	cont->state_start_time = clock_us();
+	cont->attack_time = (cont->config->attack_time * velocity) / 127;
 	cont->state = ATTACK;
 }
 
@@ -79,13 +81,11 @@ void note_controller_set_config(struct note_controller *cont, const struct note_
 void note_controller_set_period_offset(struct note_controller *cont,
 		int32_t period_offset) {
 	cont->period_offset = period_offset;
-	printf("period_offset: %ld\n", period_offset);
 	note_controller_update_period(cont);
 }
 
 void note_controller_pitch_bend(struct note_controller *cont,
 		int16_t pitch_bend) {
-	printf("pitch_bend: %d\n", pitch_bend);
 	int32_t period_offset = pitch_bend / 2;
 	note_controller_set_period_offset(cont, period_offset);
 }
