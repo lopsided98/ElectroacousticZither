@@ -1,6 +1,8 @@
 #include "midi.h"
 #include "util.h"
 
+uint8_t MIDI_NOTE_OCTAVE_OFFSET = 12;
+
 void midi_init(struct midi *m, XUartNs550 *uart) {
 	m->uart = uart;
 	m->running_status = MIDI_COMMAND_INVALID;

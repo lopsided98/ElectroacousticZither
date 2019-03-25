@@ -11,6 +11,11 @@
 #include "note_controller.h"
 #include "midi.h"
 
+struct note_config {
+	struct note_controller *controller;
+	struct note_controller_config controller_config;
+};
+
 static struct string_driver strings[8] = {
 	{ .base_addr = XPAR_STRING_0_BASEADDR },
 	{ .base_addr = XPAR_STRING_1_BASEADDR },
@@ -24,202 +29,7 @@ static struct string_driver strings[8] = {
 
 static struct note_controller controllers[8];
 
-struct note_config {
-	struct note_controller *controller;
-	struct note_controller_config controller_config;
-};
-
-static struct note_config NOTE_CONFIG_F3 = {
-	.controller = &controllers[0],
-	.controller_config = {
-		.period = STRING_PERIOD(17461),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 390,
-		.release_amplitude = 1000,
-		.attack_time = 90000,
-		.release_time = 0
-	}
-};
-
-static struct note_config NOTE_CONFIG_G3 = {
-	.controller = &controllers[1],
-	.controller_config = {
-		.period = STRING_PERIOD(19600),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 390,
-		.release_amplitude = 1000,
-		.attack_time = 80000,
-		.release_time = 0
-	}
-};
-
-static struct note_config NOTE_CONFIG_A3 = {
-	.controller = &controllers[2],
-	.controller_config = {
-		.period = STRING_PERIOD(22000),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 390,
-		.release_amplitude = 1000,
-		.attack_time = 50000,
-		.release_time = 0
-	}
-};
-
-static struct note_config NOTE_CONFIG_B3_FLAT = {
-	.controller = &controllers[3],
-	.controller_config = {
-		.period = STRING_PERIOD(23308),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 390,
-		.release_amplitude = 1000,
-		.attack_time = 50000,
-		.release_time = 0
-	}
-};
-
-static struct note_config NOTE_CONFIG_C4 = {
-	.controller = &controllers[4],
-	.controller_config = {
-		.period = STRING_PERIOD(26163),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 390,
-		.release_amplitude = 1000,
-		.attack_time = 50000,
-		.release_time = 0
-	}
-};
-
-static struct note_config NOTE_CONFIG_D4 = {
-	.controller = &controllers[5],
-	.controller_config = {
-		.period = STRING_PERIOD(29366),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 390,
-		.release_amplitude = 1000,
-		.attack_time = 50000,
-		.release_time = 0
-	}
-};
-
-static struct note_config NOTE_CONFIG_E4 = {
-	.controller = &controllers[6],
-	.controller_config = {
-		.period = STRING_PERIOD(32963),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 390,
-		.release_amplitude = 1000,
-		.attack_time = 50000,
-		.release_time = 0
-	}
-};
-
-static struct note_config NOTE_CONFIG_F4 = {
-	.controller = &controllers[7],
-	.controller_config = {
-		.period = STRING_PERIOD(34923),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 390,
-		.release_amplitude = 1000,
-		.attack_time = 50000,
-		.release_time = 0
-	}
-};
-
-static struct note_config NOTE_CONFIG_F4_2 = {
-	.controller = &controllers[0],
-	.controller_config = {
-		.period = STRING_PERIOD(34923),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
-		.release_amplitude = 1000,
-		.attack_time = 50000,
-		.release_time = 0
-	}
-};
-
-static struct note_config NOTE_CONFIG_G4 = {
-	.controller = &controllers[1],
-	.controller_config = {
-		.period = STRING_PERIOD(39200),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
-		.release_amplitude = 1000,
-		.attack_time = 50000,
-		.release_time = 0
-	}
-};
-
-static struct note_config NOTE_CONFIG_A4 = {
-	.controller = &controllers[2],
-	.controller_config = {
-		.period = STRING_PERIOD(44000),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
-		.release_amplitude = 1000,
-		.attack_time = 50000,
-		.release_time = 0,
-	}
-};
-
-static struct note_config NOTE_CONFIG_B4_FLAT = {
-	.controller = &controllers[3],
-	.controller_config = {
-		.period = STRING_PERIOD(46616),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
-		.release_amplitude = 1000,
-		.attack_time = 50000,
-		.release_time = 0,
-	}
-};
-
-static struct note_config NOTE_CONFIG_C5 = {
-	.controller = &controllers[4],
-	.controller_config = {
-		.period = STRING_PERIOD(52325),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
-		.release_amplitude = 1000,
-		.attack_time = 50000,
-		.release_time = 0
-	}
-};
-
-static struct note_config NOTE_CONFIG_D5 = {
-	.controller = &controllers[5],
-	.controller_config = {
-		.period = STRING_PERIOD(58733),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
-		.release_amplitude = 1000,
-		.attack_time = 50000,
-		.release_time = 0
-	}
-};
-
-static struct note_config NOTE_CONFIG_E5 = {
-	.controller = &controllers[6],
-	.controller_config = {
-		.period = STRING_PERIOD(65926),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
-		.release_amplitude = 1000,
-		.attack_time = 50000,
-		.release_time = 0
-	}
-};
-
-static struct note_config NOTE_CONFIG_F5 = {
-	.controller = &controllers[7],
-	.controller_config = {
-		.period = STRING_PERIOD(69846),
-		.attack_amplitude = 1000,
-		.sustain_amplitude = 417,
-		.release_amplitude = 1000,
-		.attack_time = 50000,
-		.release_time = 0
-	}
-};
+static struct note_config notes[128] = {{.controller = NULL}};
 
 #define GPIO_LEDS_CHANNEL 1
 #define GPIO_SWITCHES_CHANNEL 2
@@ -308,6 +118,162 @@ int init() {
 	return err;
 }
 
+void note_config_add(enum midi_note note, uint32_t freq, struct note_controller* controller,
+		struct note_controller_config configs[], size_t configs_len) {
+	for (size_t i = 0; note < ARRAY_LENGTH(notes); ++i) {
+		printf("add note: %u\n", note);
+		struct note_config *config = &notes[note];
+		config->controller = controller;
+		if (i < configs_len){
+			config->controller_config = configs[i];
+		} else {
+			config->controller_config = configs[configs_len - 1];
+		}
+		config->controller_config.period = STRING_PERIOD(freq);
+
+		note += MIDI_NOTE_OCTAVE_OFFSET;
+		freq *= 2;
+	}
+}
+
+void init_notes() {
+	note_config_add(MIDI_NOTE_F3, 17461, &controllers[0], (struct note_controller_config[]) {
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 390,
+			.release_amplitude = 1000,
+			.attack_time = 90000,
+			.release_time = 0
+		},
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 417,
+			.release_amplitude = 1000,
+			.attack_time = 50000,
+			.release_time = 0
+		}
+	}, 2);
+
+	note_config_add(MIDI_NOTE_G3, 19600, &controllers[1], (struct note_controller_config[]) {
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 390,
+			.release_amplitude = 1000,
+			.attack_time = 80000,
+			.release_time = 0
+		},
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 417,
+			.release_amplitude = 1000,
+			.attack_time = 50000,
+			.release_time = 0
+		}
+	}, 2);
+
+	note_config_add(MIDI_NOTE_A3, 22000, &controllers[2], (struct note_controller_config[]) {
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 390,
+			.release_amplitude = 1000,
+			.attack_time = 50000,
+			.release_time = 0
+		},
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 417,
+			.release_amplitude = 1000,
+			.attack_time = 50000,
+			.release_time = 0
+		}
+	}, 2);
+
+	note_config_add(MIDI_NOTE_B_FLAT3, 23308, &controllers[3], (struct note_controller_config[]) {
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 390,
+			.release_amplitude = 1000,
+			.attack_time = 50000,
+			.release_time = 0
+		},
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 417,
+			.release_amplitude = 1000,
+			.attack_time = 50000,
+			.release_time = 0
+		}
+	}, 2);
+
+	note_config_add(MIDI_NOTE_C4, 26163, &controllers[4], (struct note_controller_config[]) {
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 390,
+			.release_amplitude = 1000,
+			.attack_time = 50000,
+			.release_time = 0
+		},
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 417,
+			.release_amplitude = 1000,
+			.attack_time = 50000,
+			.release_time = 0
+		}
+	}, 2);
+
+	note_config_add(MIDI_NOTE_D4, 29366, &controllers[5], (struct note_controller_config[]) {
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 390,
+			.release_amplitude = 1000,
+			.attack_time = 50000,
+			.release_time = 0
+		},
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 417,
+			.release_amplitude = 1000,
+			.attack_time = 50000,
+			.release_time = 0
+		}
+	}, 2);
+
+	note_config_add(MIDI_NOTE_E4, 32963, &controllers[6], (struct note_controller_config[]) {
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 390,
+			.release_amplitude = 1000,
+			.attack_time = 50000,
+			.release_time = 0
+		},
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 417,
+			.release_amplitude = 1000,
+			.attack_time = 50000,
+			.release_time = 0
+		}
+	}, 2);
+
+	note_config_add(MIDI_NOTE_F4, 34923, &controllers[7], (struct note_controller_config[]) {
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 390,
+			.release_amplitude = 1000,
+			.attack_time = 50000,
+			.release_time = 0
+		},
+		{
+			.attack_amplitude = 1000,
+			.sustain_amplitude = 417,
+			.release_amplitude = 1000,
+			.attack_time = 50000,
+			.release_time = 0
+		}
+	}, 2);
+}
+
 enum midi_note midi_note_keyboard_remap(enum midi_note note) {
 	switch (note) {
 	case MIDI_NOTE_C2:
@@ -317,7 +283,7 @@ enum midi_note midi_note_keyboard_remap(enum midi_note note) {
 	case MIDI_NOTE_E2:
 		return MIDI_NOTE_A3;
 	case MIDI_NOTE_F2:
-		return MIDI_NOTE_B3_FLAT;
+		return MIDI_NOTE_B_FLAT3;
 	case MIDI_NOTE_G2:
 		return MIDI_NOTE_C4;
 	case MIDI_NOTE_A2:
@@ -331,7 +297,7 @@ enum midi_note midi_note_keyboard_remap(enum midi_note note) {
 	case MIDI_NOTE_E3:
 		return MIDI_NOTE_A4;
 	case MIDI_NOTE_F3:
-		return MIDI_NOTE_B4_FLAT;
+		return MIDI_NOTE_B_FLAT4;
 	case MIDI_NOTE_G3:
 		return MIDI_NOTE_C5;
 	case MIDI_NOTE_A3:
@@ -345,64 +311,15 @@ enum midi_note midi_note_keyboard_remap(enum midi_note note) {
 	}
 }
 
-struct note_config *midi_note_config_harmonic(uint8_t note) {
-	switch (note) {
-	case MIDI_NOTE_F3:
-		return &NOTE_CONFIG_F4_2;
-	case MIDI_NOTE_G3:
-		return &NOTE_CONFIG_G4;
-	case MIDI_NOTE_A3:
-		return &NOTE_CONFIG_A4;
-	case MIDI_NOTE_B3_FLAT:
-		return &NOTE_CONFIG_B4_FLAT;
-	case MIDI_NOTE_C4:
-		return &NOTE_CONFIG_C5;
-	case MIDI_NOTE_D4:
-		return &NOTE_CONFIG_D5;
-	case MIDI_NOTE_E4:
-		return &NOTE_CONFIG_E5;
-	case MIDI_NOTE_F4:
-		return &NOTE_CONFIG_F5;
-	default:
+struct note_config *midi_note_config(enum midi_note note) {
+	if (note >= ARRAY_LENGTH(notes)) {
 		return NULL;
 	}
-}
-
-struct note_config *midi_note_config(uint8_t note) {
-	switch (note) {
-	case MIDI_NOTE_F3:
-		return &NOTE_CONFIG_F3;
-	case MIDI_NOTE_G3:
-		return &NOTE_CONFIG_G3;
-	case MIDI_NOTE_A3:
-		return &NOTE_CONFIG_A3;
-	case MIDI_NOTE_B3_FLAT:
-		return &NOTE_CONFIG_B3_FLAT;
-	case MIDI_NOTE_C4:
-		return &NOTE_CONFIG_C4;
-	case MIDI_NOTE_D4:
-		return &NOTE_CONFIG_D4;
-	case MIDI_NOTE_E4:
-		return &NOTE_CONFIG_E4;
-	case MIDI_NOTE_F4:
-		return &NOTE_CONFIG_F4;
-	case MIDI_NOTE_G4:
-		return &NOTE_CONFIG_G4;
-	case MIDI_NOTE_A4:
-		return &NOTE_CONFIG_A4;
-	case MIDI_NOTE_B4_FLAT:
-		return &NOTE_CONFIG_B4_FLAT;
-	case MIDI_NOTE_C5:
-		return &NOTE_CONFIG_C5;
-	case MIDI_NOTE_D5:
-		return &NOTE_CONFIG_D5;
-	case MIDI_NOTE_E5:
-		return &NOTE_CONFIG_E5;
-	case MIDI_NOTE_F5:
-		return &NOTE_CONFIG_F5;
-	default:
+	struct note_config* config = &notes[note];
+	if (!config->controller){
 		return NULL;
 	}
+	return config;
 }
 
 void handle_midi_note_on(const struct midi_msg *msg, bool remap) {
@@ -450,18 +367,25 @@ void handle_midi_control_change(const struct midi_msg *msg) {
 
 void handle_midi_sysex_frequency(const struct midi_msg *msg) {
 	enum midi_note note = midi_msg_note(msg);
-	struct note_config *config = midi_note_config(note);
 
-	uint32_t frequency = midi_msg_sysex_freqency(msg);
+	const uint32_t frequency = midi_msg_sysex_freqency(msg);
 	printf("note: %u, frequency: %lu\n", midi_msg_note(msg), frequency);
 
+	struct note_config *config = midi_note_config(note);
+	uint32_t period = STRING_PERIOD(frequency);
+
 	if (frequency && config) {
-		config->controller_config.period = STRING_PERIOD(frequency);
+		config->controller_config.period = period;
 		note_controller_set_config(config->controller, &config->controller_config);
 
-		struct note_config *harmonic_config = midi_note_config_harmonic(note);
-		if (harmonic_config) {
-			harmonic_config->controller_config.period = DIV_ROUND_CLOSEST(config->controller_config.period, 2);
+		while (1) {
+			note += MIDI_NOTE_OCTAVE_OFFSET;
+			period = DIV_ROUND_CLOSEST(period, 2);
+			config = midi_note_config(note);
+			if (!config) {
+				break;
+			}
+			config->controller_config.period = period;
 		}
 	}
 }
@@ -508,6 +432,8 @@ int main() {
 		printf("Initialization failed, error: %d\n", err);
 		return err;
 	}
+
+	init_notes();
 
 	print("Started\n");
 
